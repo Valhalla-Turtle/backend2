@@ -1,8 +1,6 @@
 const path = require('path'); // Needed for proper file path joining
 const Book = require('../models/Book');
 const fs = require('fs');
-const sharp = require('sharp');
-const { error } = require('console');
 
 exports.createBook = async (req, res, next) => {
   try {
@@ -10,26 +8,10 @@ exports.createBook = async (req, res, next) => {
     delete bookObject._id;
     delete bookObject._userId;
 
-    const inputPath = path.join('images', req.file.filename);
-    const outputFilename = req.file.filename.split('.')[0] + '.webp';
-    const outputPath = path.join('images', outputFilename);
-
-    // 1. Optimize the image
-    await sharp(inputPath)
-      .resize(500)
-      .toFormat('webp')
-      .toFile(outputPath);
-
-    // 2. Delete original image (optional)
-    fs.unlink(inputPath, (err) => {
-      if (err) console.error('Failed to delete original image:', err);
-    });
-
-    // 3. Save book with optimized image URL
     const book = new Book({
       ...bookObject,
       userId: req.auth.userId,
-      imageUrl: `${req.protocol}://${req.get('host')}/images/${outputFilename}`,
+      imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
       ratings: [{ userId: req.auth.userId, grade: bookObject.ratings[0].grade }]
     });
 

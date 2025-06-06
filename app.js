@@ -5,9 +5,11 @@ const app = express();
 const bookRoutes = require('./routes/book');
 const userRoutes = require('./routes/user');
 const path = require('path');
+require('dotenv').config();
+
 
 const mongoose = require('mongoose');
-mongoose.connect('mongodb+srv://morgantasset:PoNS5RPIzav2S0Lr@cluster0.cpsprg7.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0',
+mongoose.connect(process.env.MONGODB_URI,
     {
         useNewUrlParser: true,
         useUnifiedTopology: true
